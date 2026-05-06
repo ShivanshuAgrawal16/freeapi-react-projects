@@ -8,6 +8,7 @@ function App() {
   const [cat, setCat] = useState({});
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -32,7 +33,6 @@ function App() {
           catsInfo = payload.data;
         }
 
-        // Fixed: setCats to setCat to match state definition
         setCat(catsInfo);
         setStatus("success");
       } catch (error) {
@@ -43,9 +43,8 @@ function App() {
     }
     getCats();
 
-    // Fixed: Added parentheses to call the abort function
     return () => controller.abort();
-  }, []);
+  }, [clicked]);
 
   const catName = cat.name;
   const cfaUrl = cat.cfa_url;
@@ -85,8 +84,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-800 py-12 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto space-y-10">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto space-y-10">
+        {/* Header Section */}
         <header className="text-center space-y-3">
           <h1 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">
             A Random Cat
@@ -130,24 +129,24 @@ function App() {
 
         {/* Success State / Cat Card */}
         {status === "success" && catName && (
-          <main className="bg-white rounded-3xl shadow-xl border border-stone-200 overflow-hidden flex flex-col md:flex-row">
+          <main className="bg-white rounded-3xl shadow-xl border border-stone-200 overflow-hidden flex flex-col lg:flex-row">
             {/* Left: Image Box */}
-            <div className="md:w-2/5 bg-stone-100">
+            <div className="lg:w-2/5 bg-stone-100 flex-shrink-0">
               {imageUrl ? (
                 <img
                   src={imageUrl}
                   alt={catName}
-                  className="w-full h-80 md:h-full object-cover"
+                  className="w-full h-80 lg:h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-80 md:h-full flex items-center justify-center text-stone-400 font-medium">
+                <div className="w-full h-80 lg:h-full flex items-center justify-center text-stone-400 font-medium">
                   No Image Available
                 </div>
               )}
             </div>
 
             {/* Right: Info Box */}
-            <div className="md:w-3/5 p-8 md:p-10 flex flex-col justify-between">
+            <div className="lg:w-3/5 p-8 md:p-10 flex flex-col justify-between">
               <div className="space-y-6">
                 {/* Title & Origin */}
                 <div>
@@ -199,8 +198,16 @@ function App() {
                   <ScoreBar label="Dog Friendly" score={dogFriendly} />
                   <ScoreBar label="Energy" score={energyLevel} />
                   <ScoreBar label="Grooming" score={grooming} />
+                  <ScoreBar label="Health Issues" score={healthIssues} />
+                  <ScoreBar label="Indoor" score={indoor} />
                   <ScoreBar label="Intelligence" score={intelligence} />
+                  <ScoreBar label="Lap Cat" score={lap} />
+                  <ScoreBar label="Shedding" score={sheddingLevel} />
                   <ScoreBar label="Social Needs" score={socialNeeds} />
+                  <ScoreBar
+                    label="Stranger Friendly"
+                    score={strangerFriendly}
+                  />
                   <ScoreBar label="Vocalisation" score={vocalisation} />
                 </div>
               </div>
@@ -212,7 +219,7 @@ function App() {
                     href={wikipediaUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-sm font-bold text-white bg-stone-900 hover:bg-stone-700 px-5 py-2.5 rounded-lg transition-colors"
+                    className="text-sm font-bold text-white bg-stone-900 hover:bg-stone-700 px-5 py-2.5 rounded-lg transition-colors shadow-sm"
                   >
                     Wikipedia
                   </a>
@@ -237,10 +244,31 @@ function App() {
                     Vetstreet
                   </a>
                 )}
+                {vcaUrl && (
+                  <a
+                    href={vcaUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-5 py-2.5 rounded-lg transition-colors"
+                  >
+                    VCA Hospitals
+                  </a>
+                )}
               </div>
             </div>
           </main>
         )}
+
+        {/* Action Button (Moved below the card) */}
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => setClicked((prev) => !prev)}
+            disabled={status === "loading"}
+            className="inline-flex items-center justify-center bg-teal-500 hover:bg-teal-600 active:bg-teal-700 disabled:bg-teal-300 disabled:cursor-not-allowed text-white font-bold text-lg py-3 px-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 active:translate-y-0"
+          >
+            {status === "loading" ? "Fetching..." : "Fetch Next Cat "}
+          </button>
+        </div>
 
         {/* Footer */}
         {status === "success" && (
