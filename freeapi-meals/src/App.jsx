@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import MealModal from "./components/MealModal.jsx";
 import MealCard from "./components/MealCard.jsx";
+
 const url = "https://api.freeapi.app/api/v1/public/meals";
 
 function App() {
   const [meals, setMeals] = useState([]);
   const [status, setStatus] = useState("idle");
-  const [error, setError] = useState("");
-  const [selectedMeal, setSelectedMeal] = useState(null); // New state for modal
+  const [error, setError] = useState(null);
+  const [selectedMeal, setSelectedMeal] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -19,7 +20,6 @@ function App() {
 
     async function getMeals() {
       setStatus("loading");
-      setError(null);
       try {
         const response = await fetch(url, options);
         if (!response.ok) {
